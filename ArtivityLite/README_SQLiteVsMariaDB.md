@@ -6,9 +6,7 @@ Diese Übung dient dazu, die Datenbank SQLite zu benutzen, zu befüllen und Abfr
 ## 1. Erstellung des Datenbankmodells
 
 Ich nehme das ERD aus dem Artivity-Projekt als Grundlage. Zur Übung specke ich es ab.
-!["Entity-Relationship-Diagramm Social Network"](image-1.png)
-
-
+!["Entity-Relationship-Diagramm Social Network"](image.png)!
 
 ## 2. Operationen durchführen
 ### 2.1 SQLite-DB anlegen
