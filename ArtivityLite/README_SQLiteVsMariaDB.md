@@ -56,9 +56,13 @@ foreign key (fid_user) references users(id_user)
 ``` 
 
 ```sql
-insert into posts(fid_user, titel, body) values(1, "Erster Post", "Willkommen bein Artivity!");
+insert into posts(fid_user, titel, body) values(1, "Erster Post", "Willkommen bein Artivity!"), (1, "Zweiter Post", "Halloooooo?"), (2, "Dritter Post", "Architektur ist interessant"), (5, "Vierter Post", "Hi, ich bin User 5!");
 ```
+Verschrieben beim ersten Post:
 
+```sql
+update posts set body = "Willkommen bei Artivity!" where titel = "Erster Post";
+```
 
 
 **kommentare**
@@ -75,7 +79,7 @@ foreign key (fid_post) references posts(id_post)
 ```
 ```sql
 insert into kommentare (fid_post, fid_user, body) values
-(2, 4, "Moinmoin!");
+(4, 4, "Moinmoin!"), (6, 3, "Hi, ich bin User 3"), (3, 2, "Hallo, freue mich, hier zu sein!");
 ```
 **schlagwoerter**
 
@@ -126,6 +130,13 @@ insert into schlagwort_bezeichnung(fid_schlagwort, fid_post) values
 (2, 4),
 (3, 3),
 (1, 2);
+```
+
+**Foreign Keys aktivieren**
+Muss man bei SQLite machen, da sie sonst nicht funktionieren.
+
+```sql
+PRAGMA foreign_keys = ON;
 ```
 
 ### 2.3 Abfragen
