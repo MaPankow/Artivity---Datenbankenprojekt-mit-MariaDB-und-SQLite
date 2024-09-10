@@ -6,7 +6,7 @@ Diese Übung dient dazu, die Datenbank SQLite zu benutzen, zu befüllen und Abfr
 ## 1. Erstellung des Datenbankmodells
 
 Ich nehme das ERD aus dem Artivity-Projekt als Grundlage. Zur Übung specke ich es ab.
-!["Entity-Relationship-Diagramm Social Network"](image.png)!
+!["Entity-Relationship-Diagramm Social Network"](image.png)
 
 ## 2. Operationen durchführen
 ### 2.1 SQLite-DB anlegen
@@ -157,10 +157,58 @@ update posts set body = "Ich freue mich, euch alle kennenzulernen" where id_post
 
 ## 3. Performance-Messung
 
-## 4. SQLite vs. SQL-Datenbank mit Server ... was ist besser für Artivity
+### Performance bei MariaDB
+Ich benutze MariaDB mit XAMPP und im Browser über PHP MyAdmin. Dort wird die Geschwindigkeit einer Query angezeigt:
+```sql
+SELECT * FROM users WHERE profilinfo IS NOT NULL;
+```
+Ergebnis:
+![MariaDB einfache Query, Abfrage dauerte 0,0003 Sekunden](queryMariaDB.png)
 
-SQLite ist in Anwendung integriert und läuft clientseitig. 
-Serverseitige DB erfordert einen extra Server
+Und hier die Performance für eine kompliziertere Abfrage mit INNER JOINs:
+```sql
+SELECT p.titel, p.body, s.schlagwort FROM schlagwort_bezeichnung sb INNER JOIN posts p ON sb.fid_post = p.id_post INNER JOIN schlagwoerter s ON s.id_schlagwort = sb.fid_schlagwort WHERE p.id_post = 2; 
+```
+Ergebnis:
+![MariaDB Query mit zwei INNER JOINS, Abfrage dauerte 0.0108 Sekunden](innerJoinMariaDB.png)
+
+### Performance bei SQLite
+Bei SQLite kann man einen Timer-Befehl verwenden, um die Abfragegeschwindigkeit zu messen.
+Dieser funktioniert in der Shell, indem ich zu dem Ordner navigiere, in dem ich die SQLite.db abgespeichert habe. (Oder zuerst das Terminal öffne und zum entsprechenden Ordner navigiere) In das Terminal gebe ich ein:
+```
+sqlite3 ArtivityLite.db
+```
+Dann verwende ich die Timer-Funktion mit folgendem Code:
+```sql
+.timer ON
+SELECT * FROM users WHERE profilinfo IS NOT NULL;
+.timer OFF
+```
+... und bekomme folgendes Ergebnis:
+```
+Run Time: real 0.000 user 0.000235 sys 0.000000
+```
+Jetzt probiere ich auch hier die längere Abfrage mit den zwei INNER JOINS:
+```sql
+sqlite> .timer ON
+sqlite> SELECT p.titel, p.body, s.schlagwort FROM schlagwort_bezeichnung sb INNER JOIN posts p ON sb.fid_post = p.id_post INNER JOIN schlagwoerter s ON s.id_schlagwort = sb.fid_schlagwort WHERE p.id_post = 3;      
+```
+Ich erhalte folgendes Ergebnis:
+```
+Run Time: real 0.001 user 0.000314 sys 0.000000
+```
+Der real-Wert ist der, der die "Run Time" im Gesamten wiedergibt. Diese wird in unserem Fall durch die verbrauchte CPU bei der Query, die als user angegeben wird, bestimmt. Ressourcen im System werden kaum verbraucht. 
+Gebe ich die beiden Querys öfter ein, bekomme ich unterschiedliche Ergebnisse. Dennoch ist jedes Mal gleich, dass bei dem Wert von user vor dem Komma und an den ersten drei Stellen hinter dem Komma 0 steht. Im Schnitt braucht die längere Query mit den INNER JOINS ca. 0.000200 Sekunden länger als die einfache Query. 
+
+### Fazit
+Bei der einfachen Abfrage sind beide MariaDB und SQLite ähnlich schnell, doch wird die Query länger, braucht MariaDB auch länger. Hier wird vor allem das Datenbankdesign wichtig, um sehr lange und komplexe Abfragen zu verhindern. Auch wenn es auf den ersten Blick sehr schnell zu gehen scheint, so wird es umso länger, wenn mehrere Abfragen hintereinander ausgeführt werden sollen und und durch wirres Datenbankdesign die Abfragen über viele JOINS gehen müssen. 
+
+Doch Geschwindigkeit ist nicht alles ...
+
+
+## 4. SQLite vs. SQL-Datenbank mit Server ... was ist besser für Artivity?
+
+The battle of the Databases ...
 
 SQLite | Serverbasierte DB
 --- | ---
@@ -188,6 +236,3 @@ Verschiedene Use-Cases liegen hier zugrunde:
 Ich werde Artivity nur zu Übungszwecken mit einer SQLite erstellen.
 Natürlich braucht ein soziales Netzwerk ein serverbasiertes Datenbanksystem.
 
-## 5. Anbindung mit Java
-
-Weil ich ja nicht auf das höre, was ich eben gesagt habe ... nein, natürlich tue ich das zu Übungszwecken, um eine SQLite-Datenbank mit einer Java-Programmierung zu verknüpfen.
