@@ -13,7 +13,8 @@ Vom Aufbau her ist es eher an Facebook angelehnt.
 
 ## Datenmodellierung
 
-### Use-Case
+### Use-Case-Diagramm
+
 Als erstes erstelle ich ein Use-Case-Diagramm, das abbildet, welche Akteure auf der Plattform aktiv sind und was diese tun können sollen. Hierfür schon vorab ein paar Gedanken:
 
 
@@ -48,9 +49,11 @@ Dieses Auflösen der Many-to-Many-Beziehung erfolgt über das Anlegen von Hilfse
 
 Es erfolgt die Überführung in ein logisches Datenmodell. Die Entitäten und ihre Eigenschaften werden nun in Tabellen angelegt. Hierbei werden die Beziehungen nicht nur mit Verbindungspfeilen dargestellt, sondern auch als Spalten in den Tabellen angelegt. Dabei werden auch die Primary Keys und Foreign Keys festgelegt. Die Beziehungen werden nicht mehr mit Worten beschrieben sondern mit spezifischen Pfeilen dargestellt, die auf die jeweils passenden Egenschaften verweisen.
 
-Diese Enittäten werden Tabellen in  der Datenbank sein und ihre Eigenschaften werden die Spalten.
+Bei der Gestaltung des physischen ERD und (da ich das zum ersten Mal in dem Umfang mache) auch kurz vor der Implementierung einzelner Tabellen, ändere ich das Modell noch ein paar Mal, weil ich über Umsetzbarkeit, Normalisierung und die Frage, ob einige Entitäten wirklich wichtig sind, noch einmal tiefgehender nachdenke. 
 
-Sind die Tabellen und Spalten richtig modelliert, trage die Datentypen und weitere Befehle eingtragen, die in der SQL-Datenbank beim Erstellen der Tabellen zu beachten sind.
+Diese Entitäten werden Tabellen in  der Datenbank sein und ihre Eigenschaften werden die Spalten.
+
+Sind die Tabellen und Spalten richtig modelliert, werden die Datentypen und weitere Eigenschaften (wie PRIMARY KEY, AUTO_INCREMENT, UNIQUE etc.) eingtragen, die in der SQL-Datenbank beim Erstellen der Tabellen zu beachten sind.
 
 Das physische ERD bildet die Datenbank ab. Nun wird sie erstellt.
 
@@ -136,6 +139,8 @@ CREATE TABLE gruppen (
 INSERT INTO gruppen(fid_gruppenadmin, gruppenname, beschreibung, gruppenbild) VALUES
 (1, 'DUH!', 'I´m a baaaaaaaad guy!', NULL);
 
+(Ich hatte da wohl einen Ohrwurm von Billie Eilish ...)
+
 INSERT INTO gruppen(fid_gruppenadmin, gruppenname, beschreibung, gruppenbild) VALUES
 (2, 'Plattenbaunerds', 'Für Leute die viele von einem in strukturierter Anordnung lieben', NULL),
 (4, 'Wir zeichnen Berlin', 'Wir treffen uns jede Woche an einem anderen Ort in der Stadt zum Zeichnen', NULL);
@@ -164,8 +169,8 @@ INSERT INTO gruppenmitglieder (fid_user, fid_gruppe) VALUES
 (5, 2)
 (1, 1);
 ```
-Die/der Gruppenadmin/a muss natürlich auch ein Gruppenmitglied sein. Daher der Gedanke, dass bei einer Gruppengründung zwei Querys erfolgen, erst die Gruppengründung und dann die Eintragung in die Gruppenmitglieder-Tabelle. Diese Querys kann ich gemeinsam abfeuern, aber auch nur, weil ich mich gerade noch so erinnern kann, wie viele Gruppen ich habe und welche ID jetzt dran wäre.
-Mit einem Backend würden die Querys hintereinander laufen, damit erst die Gruppen-Id der neuen Gruppe vergeben wird. Diese Befehle laufen nacheinander durch, sobald die Person, die die Gruppe erstellt, fertig ist und die Erstellung bestätigt.
+Die/der Gruppenadmin/a muss natürlich auch ein Gruppenmitglied sein. Daher der Gedanke, dass bei einer Gruppengründung zwei Querys erfolgen, erst die Gruppengründung und dann die Eintragung in die Gruppenmitglieder-Tabelle. Diese Querys kann ich gemeinsam absenden, aber auch nur, weil ich mich gerade noch so erinnern kann, wie viele Gruppen ich habe und welche ID jetzt dran wäre.
+
 
 ### Posts
 
@@ -318,11 +323,11 @@ CREATE TABLE likes_kommentare (
     );
 ```
 ### Referenzlinks und Tags auf andere Users
-Finden über Verlinkungen auf Anwendungsebene statt. Ich halte es nicht für nötig, sie extra in der Datenbank abzuspeichern, da es erstens viele weitere Tabellen erfordern würde und zweitens fallen mir keine Use-Cases ein, die hierfür eine extra Datenbank erfordern, zumindest nicht in diesem Rahmen. (Es könnte vielleicht marketingtechnisch relevat sein, doch das Thema würde jetzt zu sehr abweichen)
-Ein Use-Case, der Links relevant machen könnte, wäre vielleicht Admin-Tätigkeit, in der man auf einen externen Link in einem Post/Kommentar aufmerksam wird, der zu Falschinformationen oder Hassinhalten führt, und nun möchte ich als Admina wissen, ob dieser Link öfter gepostet worden ist. Dies ließe sich aber auch mit einem LIKE-Operator abfragen.
+Finden über Verlinkungen auf Anwendungsebene statt. Ich halte es nicht für sinnvoll, sie extra in der Datenbank abzuspeichern, da es viele weitere Tabellen erfordern würde oder ich müsste nur einen Link pro Post erlauben, wenn ich dafür eine Spalte in der Posts-Tabelle haben will. 
+Ein Use-Case, der Links in einem Post oder Kommentar relevant machen könnte, wäre vielleicht Admin/a-Tätigkeit. Vielleicht wird man auf einen externen Link in einem Post/Kommentar aufmerksam gemacht, der zu Falschinformationen oder Hassinhalten führt, und nun möchte ich als Admina wissen, ob dieser Link öfter gepostet worden ist. Dies ließe sich aber auch mit einem LIKE-Operator abfragen.
 
 Z. B. gibt die folgende Abfrage den Post aus, den ich testweise angefertigt habe und in dem das Wort "float" vorkommt:
 ```sql 
 SELECT * FROM posts WHERE body LIKE ('%float%');
 ```
-Die Abfrage habe ich auf die Schnelle auf das Wort gemacht, weil ich keinen Test-Post mit einem Link eigegeben habe. Aber man kann alles zwischen die '% ... %' eingeben, auch einen Link, den man wiederfinden möchte.
+Man kann alles zwischen die '% ... %' eingeben, auch einen Link, den man wiederfinden möchte.

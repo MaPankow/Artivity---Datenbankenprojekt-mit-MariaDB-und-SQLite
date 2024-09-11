@@ -5,8 +5,8 @@ Diese Übung dient dazu, die Datenbank SQLite zu benutzen, zu befüllen und Abfr
 
 ## 1. Erstellung des Datenbankmodells
 
-Ich nehme das ERD aus dem Artivity-Projekt als Grundlage. Zur Übung specke ich es ab.
-!["Entity-Relationship-Diagramm Social Network"](image.png)
+Ich nehme das ERD aus dem Artivity-Projekt als Grundlage. Zur Übung specke ich es ab und weil es so klein geworden ist, zeige ich es gleich hier im README.
+!["Entity-Relationship-Diagramm Social Network"](ERD-SQLite.png)
 
 ## 2. Operationen durchführen
 ### 2.1 SQLite-DB anlegen
@@ -169,8 +169,23 @@ Und hier die Performance für eine kompliziertere Abfrage mit INNER JOINs:
 ```sql
 SELECT p.titel, p.body, s.schlagwort FROM schlagwort_bezeichnung sb INNER JOIN posts p ON sb.fid_post = p.id_post INNER JOIN schlagwoerter s ON s.id_schlagwort = sb.fid_schlagwort WHERE p.id_post = 2; 
 ```
-Ergebnis:
-![MariaDB Query mit zwei INNER JOINS, Abfrage dauerte 0.0108 Sekunden](innerJoinMariaDB.png)
+![MariaDB Query mit INNER JOINS, Abfrage dauerte 0.0108 Sekunden](innerJoinMariaDB.png)
+
+Auch um SQL zu üben, habe ich noch eine Abfrage mit 3 INNER JOINS gestartet.
+
+```sql
+SELECT p.titel, p.body, s.schlagwort, u.username
+FROM schlagwort_bezeichnung sb 
+INNER JOIN posts p ON sb.fid_post = p.id_post 
+INNER JOIN schlagwoerter s ON s.id_schlagwort = sb.fid_schlagwort 
+INNER JOIN users u ON u.id_user = p.fid_user
+WHERE p.id_post = 2; 
+```
+Sie lieferte dieses Ergebnis: 
+![Abfrage mit 3 INNER JOINS, Abfrage dauerte 0.0008 Sekunden](dreiInnerJoins.png)
+
+Wie kann das sein? Sollte eine Abfrage nicht länger dauern, je komplexer sie wird? 
+Eigentlich sollte man das annehmen, doch bei jeder Abfrage kommt jedes Mal ein anderes Ergebnis, wenn ich sie durchführe.
 
 ### Performance bei SQLite
 Bei SQLite kann man einen Timer-Befehl verwenden, um die Abfragegeschwindigkeit zu messen.
@@ -197,13 +212,29 @@ Ich erhalte folgendes Ergebnis:
 ```
 Run Time: real 0.001 user 0.000314 sys 0.000000
 ```
-Der real-Wert ist der, der die "Run Time" im Gesamten wiedergibt. Diese wird in unserem Fall durch die verbrauchte CPU bei der Query, die als user angegeben wird, bestimmt. Ressourcen im System werden kaum verbraucht. 
-Gebe ich die beiden Querys öfter ein, bekomme ich unterschiedliche Ergebnisse. Dennoch ist jedes Mal gleich, dass bei dem Wert von user vor dem Komma und an den ersten drei Stellen hinter dem Komma 0 steht. Im Schnitt braucht die längere Query mit den INNER JOINS ca. 0.000200 Sekunden länger als die einfache Query. 
+Auch hier probiere ich die Abfrage mit 3 INNER JOINS
+
+```sql
+SELECT p.titel, p.body, s.schlagwort, u.username
+FROM schlagwort_bezeichnung sb 
+INNER JOIN posts p ON sb.fid_post = p.id_post 
+INNER JOIN schlagwoerter s ON s.id_schlagwort = sb.fid_schlagwort 
+INNER JOIN users u ON u.id_user = p.fid_user
+WHERE p.id_post = 4; 
+```
+Mit folgendem Ergebnis:
+```
+Run Time: real 0.000 user 0.000000 sys 0.000264
+```
+
+Der real-Wert ist der, der die "Run Time" im Gesamten wiedergibt. Diese wird in unserem Fall durch die verbrauchte CPU bei der Query, die als user angegeben wird, bestimmt. Ressourcen im System werden mit dem Wert sys angegeben. 
+Gebe ich die beiden Querys öfter ein, bekomme ich auch hier unterschiedliche Ergebnisse. Dennoch ist jedes Mal gleich, dass vor dem Komma und an den ersten drei Stellen hinter dem Komma 0 steht. Dennoch unterliegt es Schwankungen, auch weil nun zu sehen  ist, dass bei dem 3-fachen INNER JOIN  nur bei dem sys-Wert etwas zu sehen ist.
 
 ### Fazit
-Bei der einfachen Abfrage sind beide MariaDB und SQLite ähnlich schnell, doch wird die Query länger, braucht MariaDB auch länger. Hier wird vor allem das Datenbankdesign wichtig, um sehr lange und komplexe Abfragen zu verhindern. Auch wenn es auf den ersten Blick sehr schnell zu gehen scheint, so wird es umso länger, wenn mehrere Abfragen hintereinander ausgeführt werden sollen und und durch wirres Datenbankdesign die Abfragen über viele JOINS gehen müssen. 
+Die Messung der Geschwindgkeit ergab, dass es bei beiden Datenbanksystemen ziemlich schnell geht. Die Ergebnisse schwankten zwar, aber sie blieben bei den Abfragen stets im Bereich bei 100 Mikrosekunden, maximal Millisekundenbereich. Das ist sehr schnell, doch meine Datenbanken sind auch sehr klein, besonders die SQLite und es sind nur ein paar Probedatensätze drin, da sollte es auch so schnell gehen. 
 
-Doch Geschwindigkeit ist nicht alles ...
+Einen Vergleich zwischen beiden Datenbankmanagementsystemen kann ich nicht anstellen, es bleibt lediglich festzustellen, dass bei beiden die Performance ähnlich hoch ist, wenn die Datenbanken klein sind.
+
 
 
 ## 4. SQLite vs. SQL-Datenbank mit Server ... was ist besser für Artivity?
@@ -232,7 +263,7 @@ Verschiedene Use-Cases liegen hier zugrunde:
 - es muss gewähleistet sein, dass mehrere Users gleichzeitig Requests durchführen und Daten eintstellen und abrufen können
 (Queue könnte man bei SQLite implementieren, die mehrere Abfragen nacheinander durchführen kann, wenn sie gleichzeitig eintreffen, das könnte aber zu Wartezeiten für die Users führen)
 
-**Fazit**
+### Fazit
 Ich werde Artivity nur zu Übungszwecken mit einer SQLite erstellen.
 Natürlich braucht ein soziales Netzwerk ein serverbasiertes Datenbanksystem.
 
