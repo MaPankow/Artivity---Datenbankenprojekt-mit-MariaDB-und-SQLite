@@ -1,9 +1,12 @@
 # SQL- Datenbank für ein Social Network
 
-Artivity ist ein fiktives soziales Netzwerk, das ich nutze, um verschiedene Datenbankmodelle damit zu modellieren und zu implementieren.
-In diesem Projekt werde ich eine Datenbank in der relationalen Datenbank MariaDB anlegen. Dieses Projekt dient außerdem dazu, SQL zu nutzen. Ich lege die Datenbank mithilfe von LAMPP und PHP MaAdmin an, benutze jedoch SQL-Code anstatt der zue Verfügung gestellten Funktionen.
+Lösung zu folgender Aufgabe:
+https://github.com/bergemann-hoehne/Datenbank-Wochenprojekte/blob/main/08_Wochenprojekt/08_Projektbeschreibung.md
 
-## 1. Beschreibung des Social Networks "Artivity" (Arbeitstitel)
+Artivity ist ein fiktives soziales Netzwerk, das ich nutze, um verschiedene Datenbankmodelle damit zu modellieren und zu implementieren.
+In diesem Projekt werde ich eine Datenbank in der relationalen Datenbank MariaDB anlegen. Dieses Projekt dient außerdem dazu, SQL zu nutzen. Ich lege die Datenbank mithilfe von LAMPP und PHP MyAdmin an, benutze jedoch SQL-Code anstatt der zu Verfügung gestellten Funktionen.
+
+## 1. Beschreibung des Social Networks "Artivity"
 
 Bei dem Social Network handelt es sich um eine (fiktive) soziale Plattform für KünstlerInnen und Kunstinteressierte, in der das Zeigen von Bildern, Musik etc. und Organisieren in Gruppen im Vordergrund stehen soll.
 
@@ -34,6 +37,8 @@ Hier tritt eine weitere Person als Actor ins Geschehen ein, denn wer eine Gruppe
 4. Clusterübergreifende Use-Cases
 Beispielsweise können Users für ihre Profile, für Gruppen oder Postings Schlagwörter aussuchen, die hier eine (grob gehaltene) Kunstrichtung bezeichnen und vom Netzwerk vorgegeben sind. Für feinere Spezifizierung ihrer Beiträge und in diesem Fall auch Kommentare können die User Hashtags nutzen. Z. B. für das Schlagwort "Literatur" könnten #schreiben #kriminalroman #coverdesign gewählt werden, die sich in diesem Fall um ein Buchgenre und Fragen ums Buch drehen (man kann mehrere Schlagwörter nehmen, so könnte #coverdesign für das Literaturgenre oder das Designgenre passend sein)
 
+![Use-Case-Diagramm](/Use-Case-Diagram.png)
+
 ## Entity-Relationship-Diagramm 
 ### ERD konzeptuell
 
@@ -45,6 +50,8 @@ In einem nächsten Schritt löse ich die Many-to-Many-Beziehungen auf, da sie in
 
 Dieses Auflösen der Many-to-Many-Beziehung erfolgt über das Anlegen von Hilfsentitäten, die eine Entität "dazwischenschieben", die auf die Ids beider Entitäten zugreift und zu beiden Entitäten jeweils eine Many-to-One-Beziehung hat.
 
+![ERD konzeptuell](/ERD-mariadb-konzeptuell.png)
+
 ### ERD physisch
 
 Es erfolgt die Überführung in ein logisches Datenmodell. Die Entitäten und ihre Eigenschaften werden nun in Tabellen angelegt. Hierbei werden die Beziehungen nicht nur mit Verbindungspfeilen dargestellt, sondern auch als Spalten in den Tabellen angelegt. Dabei werden auch die Primary Keys und Foreign Keys festgelegt. Die Beziehungen werden nicht mehr mit Worten beschrieben sondern mit spezifischen Pfeilen dargestellt, die auf die jeweils passenden Egenschaften verweisen.
@@ -55,6 +62,7 @@ Diese Entitäten werden Tabellen in  der Datenbank sein und ihre Eigenschaften w
 
 Sind die Tabellen und Spalten richtig modelliert, werden die Datentypen und weitere Eigenschaften (wie PRIMARY KEY, AUTO_INCREMENT, UNIQUE etc.) eingtragen, die in der SQL-Datenbank beim Erstellen der Tabellen zu beachten sind.
 
+![ERD physisch](/ERD-mariadb-physisch.png)
 Das physische ERD bildet die Datenbank ab. Nun wird sie erstellt.
 
 
